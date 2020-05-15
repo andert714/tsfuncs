@@ -9,6 +9,8 @@ Authors@R:
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: Contains functions for visualizing and summarizing time series data and forecasts. 
 License: MIT + file LICENSE
+URL: https://github.com/travisandersen14/tsfuncs
+BugReports: https://github.com/travisandersen14/tsfuncs/issues
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
