@@ -2,4 +2,5 @@
 
 export(ts_accuracy)
 export(ts_graph)
+export(ts_seasonality)
 importFrom(dplyr,"%>%")

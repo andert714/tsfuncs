@@ -2,8 +2,7 @@
 #'
 #' Create an interactive graph of a time series tibble.
 #'
-#' @param ts_df A tibble containing dates in column labeled 'ds' and
-#' values in column labeled 'y'.
+#' @param ts_df A tibble containing dates in column labeled 'ds' and values in column labeled 'y'.
 #' If forecast is contained, the point forecast should be in a column labeled 'yhat', and
 #' respective prediction intervals should be in columns labeled 'yhat_lower' and 'yhat_upper'.
 #'
@@ -11,7 +10,8 @@
 #' @export
 #'
 #' @examples
-#' ts_graph(tidyr::tibble(ds = lubridate::today() - 100:1, y = rnorm(100)))
+#' df <- tidyr::tibble(ds = lubridate::today() - 100:1, y = rnorm(100))
+#' ts_graph(df)
 #' @importFrom dplyr %>%
 ts_graph <- function(ts_df){
   graph <- ts_df %>%

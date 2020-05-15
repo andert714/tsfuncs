@@ -18,6 +18,8 @@ RoxygenNote: 7.1.0
 Imports: 
     dplyr,
     dygraphs,
+    ggplot2,
+    gridExtra,
     lubridate,
     tidyr,
     xts

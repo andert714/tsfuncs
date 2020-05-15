@@ -14,10 +14,10 @@ be in columns labeled 'yhat_lower' and 'yhat_upper'.}
 \item{lag}{The lag to be used in calculating MASE, which should be the period of seasonality of the time series.}
 }
 \value{
-
+A tibble with ME, MAE, MASE, Coverage, and Width columns.
 }
 \description{
-Time series accuracy
+Calculates ME, MAE, MASE, Coverage, and Width for a time series tibble.
 }
 \examples{
 df <- tidyr::tibble(
@@ -28,5 +28,4 @@ df <- tidyr::tibble(
   yhat_upper = yhat + 1
 )
 ts_accuracy(df)
-#' @importFrom dplyr \%>\%
 }
