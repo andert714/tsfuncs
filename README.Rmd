@@ -18,37 +18,103 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of tsfuncs is to ...
+The goal of tsfuncs is to aid in visualizing and summarizing time series data and forecasts.
 
 ## Installation
 
-You can install the released version of tsfuncs from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of tsfuncs from [GitHub](https://github.com/travisandersen14/tsfuncs) with:
 
 ``` r
-install.packages("tsfuncs")
+devtools::install_github("travisandersen14/tsfuncs")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to solve a common problem with tsfuncs. tsfuncs is designed to work with the tidyverse. We will also load the fpp3 package for modeling.
 
-```{r example}
+```{r Load libraries, message = FALSE, warning = FALSE}
 library(tsfuncs)
-## basic example code
+library(tidyverse)
+library(fpp3)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+### Exploratory Data Analysis
 
-```{r cars}
-summary(cars)
+In this example the AirPassengers dataset from the datasets package will be used. It is a dataset with monthly totals of international airline passengers from 1949 to 1960. It is loaded as a time series in R, but for this example we will convert it to a tibble. tsfuncs is designed to work with tibbles as to allow access to the tidyverse. 
+
+```{r Load Data}
+df <- tibble(
+  ds = seq(as_date('1949-01-01'), as_date('1960-12-01'), 'month'),
+  y = as.numeric(AirPassengers)
+)
+head(df)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+We can create an interactive exploratory graph of the data with ts_graph as follows:
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r EDA_Graph}
+ts_graph(df)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+We can also explore possible seasonality patterns with ts_seasonality.
+
+```{r EDA_Seasonality}
+ts_seasonality(df, 'monthly')
+```
+
+
+### Cross Validation
+
+To test the predictive ability of an ARIMA model, a cross validation was run using the last three years of the data as a testing period, and training the model on the remaining data. In this example, the fpp3 library was used to fit the ARIMA model. The forecast data is then merged with the original data to create a tibble with columns 'ds', 'y', 'yhat', 'yhat_lower', and 'yhat_upper'. 
+
+```{r CV, echo = FALSE}
+cv <- df %>% 
+  slice(1:(nrow(df) - 36)) %>% 
+  mutate_at('ds', yearmonth) %>% 
+  as_tsibble(index = ds) %>% 
+  model(ARIMA(y)) %>% 
+  forecast(h = 36) %>% 
+  hilo(80) %>% 
+  as_tibble %>% 
+  transmute(ds = as_date(ds), yhat = y, yhat_lower = map_dbl(`80%`, 1), yhat_upper = map_dbl(`80%`, 2))
+  
+cv_df <- full_join(df, cv, 'ds')
+head(cv_df)
+```
+
+We can assess fit with ts_graph as follows:
+
+```{r CV_Graph}
+ts_graph(cv_df)
+```
+
+We can also calculate accuracy metrics over the testing period with ts_accuracy.
+
+```{r CV_Accuracy}
+ts_accuracy(cv_df)
+```
+
+### Forecast
+
+The data was then forecast for the following five years using an ARIMA model. The fpp3 package will be used again for the modeling. 
+
+```{r FC}
+fc <- df %>% 
+  mutate_at('ds', yearmonth) %>% 
+  as_tsibble(index = ds) %>% 
+  model(ARIMA(y)) %>% 
+  forecast(h = 60) %>% 
+  hilo(80) %>% 
+  as_tibble %>% 
+  transmute(ds = as_date(ds), yhat = y, yhat_lower = map_dbl(`80%`, 1), yhat_upper = map_dbl(`80%`, 2))
+
+fc_df <- full_join(df, fc, 'ds')
+head(fc_df)
+```
+
+We can now view the resulting forecast using ts_graph. 
+
+```{r FC_Graph}
+ts_graph(fc_df)
+```
+

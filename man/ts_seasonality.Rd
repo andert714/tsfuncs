@@ -4,22 +4,20 @@
 \alias{ts_seasonality}
 \title{Explore time series seasonality}
 \usage{
-ts_seasonality(ts_df, seasonalities = c("weekly", "monthly", "yearly"))
+ts_seasonality(ts_df, ts_type)
 }
 \arguments{
 \item{ts_df}{A tibble containing dates in column labeled 'ds' and values in column labeled 'y'.}
 
-\item{seasonalities}{A string containing which seasonalities will be plotted. The options are 'weekly',
-'monthly', and 'yearly'.}
+\item{ts_type}{A string indicating the type of time series. Valid options are 'daily', 'monthly', and 'quarterly'.}
 }
 \value{
-A collection of seasonality plots.
+A seasonality plot.
 }
 \description{
-Creates side-by-side boxplots for analyzing weekly, monthly, and yearly seasonalities for
-a time series tibble.
+Creates side-by-side boxplots for analyzing seasonality for weekly, monthly, and quarterly time series tibbles.
 }
 \examples{
 df <- tidyr::tibble(ds = lubridate::today() - 100:1, y = rnorm(100))
-ts_seasonality(df)
+ts_seasonality(df, 'daily')
 }
